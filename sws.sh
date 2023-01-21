@@ -2,6 +2,7 @@
 
 Help(){
     echo usage: sws \<connect\|disconnect\> \<application name\>
+    echo you can also use \"c\" instead of \"connect\" and \"d\" instead of \"disconnect\"
     echo note that the application name should be the name of the binary found in pw-dump.
     exit
 }
@@ -31,10 +32,10 @@ GetOutput() {
 
 GetInput() {
     #ipid=$(xprop | grep PID | grep -o \[0-9\]\*)
-    echo finding the node for $program_name
-    input_node=$(pw-dump | jq '.[] | if(.info.props."application.process.binary" == "'$program_name'" and .type == "PipeWire:Interface:Node" and .info."max-input-ports" > 0) then .id else null end' | grep -v null)
-    echo id of input nodes: $input_node
-    for i in $input_node
+    echo finding the nodes for $program_name
+    input_nodes=$(pw-dump | jq '.[] | if(.info.props."application.process.binary" == "'$program_name'" and .type == "PipeWire:Interface:Node" and .info."max-input-ports" > 0) then .id else null end' | grep -v null)
+    echo id of input nodes: $input_nodes
+    for i in $input_nodes
     do
         echo finding ports for $i
         new_ports=$(pw-dump | jq '.[] | if(.type == "PipeWire:Interface:Port" and .info.direction == "input" and .info.props."node.id" == '$i') then .id else null end' | grep -v null)
